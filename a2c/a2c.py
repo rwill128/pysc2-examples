@@ -22,7 +22,7 @@ import nsml
 _CONTROL_GROUP_RECALL = 0
 _NOT_QUEUED = 0
 
-# np.set_printoptions(threshold=np.inf)
+np.set_printoptions(threshold=np.inf)
 
 def mse(pred, target):
   return tf.square(pred-target)/2.
@@ -300,12 +300,12 @@ class Runner(object):
     self.group_id = [0 for _ in range(nenv)]
 
   def update_obs(self, obs):  # (self.nenv, 32, 32, 2)
-    #obs = np.asarray(obs, dtype=np.int32).swapaxes(1, 2).swapaxes(2, 3)
+    obs = np.asarray(obs, dtype=np.int32).swapaxes(1, 2).swapaxes(2, 3)
     self.obs = np.roll(self.obs, shift=-3, axis=3)
     new_map = np.zeros((self.nenv, 32, 32, 3))
     new_map[:, :, :, -1] = obs[:, 0, :, :]
     for env_num in range(self.nenv):
-      # print("xy_per_marine: ", self.xy_per_marine)
+      print("xy_per_marine: ", self.xy_per_marine)
       if "0" not in self.xy_per_marine[env_num]:
         self.xy_per_marine[env_num]["0"] = [0, 0]
       if "1" not in self.xy_per_marine[env_num]:
@@ -319,14 +319,14 @@ class Runner(object):
     # could not broadcast input array from shape (4,1,32,32) into shape (4,4,32)
 
   def update_available(self, _available_actions):
-    #print("update_available : ", _available_actions)
+    print("update_available : ", _available_actions)
     self.available_actions = _available_actions
     # avail = np.array([[0,1,2,3,4,7], [0,1,2,3,4,7]])
     self.base_act_mask = np.full((self.nenv, 3), 0, dtype=np.uint8)
     for env_num, list in enumerate(_available_actions):
-      # print("env_num :", env_num, " list :", list)
+      print("env_num :", env_num, " list :", list)
       for action_num in list:
-        # print("action_num :", action_num)
+        print("action_num :", action_num)
         if (action_num == 4):
           self.base_act_mask[env_num][0] = 1
           self.base_act_mask[env_num][1] = 1

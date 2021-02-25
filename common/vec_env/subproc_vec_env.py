@@ -41,10 +41,10 @@ def worker(remote, map_name, nscripts, i):
 
         action1 = data[0][0]
         action2 = data[0][1]
-        # func = actions.FUNCTIONS[action1[0]]
-        # print("agent(",i," ) action : ", action1, " func : ", func)
+        func = actions.FUNCTIONS[action1[0]]
+        print("agent(",i," ) action : ", action1, " func : ", func)
         func = actions.FUNCTIONS[action2[0]]
-        # print("agent(",i," ) action : ", action2, " func : ", func)
+        print("agent(",i," ) action : ", action2, " func : ", func)
 
 
         result = env.step(actions=[action1])
@@ -55,10 +55,10 @@ def worker(remote, map_name, nscripts, i):
 
         if len(action2[1]) == 2:
           x, y = action2[1][1]
-          # print("x, y:", x, y)
+          print("x, y:", x, y)
 
-          # if x == 0 and y == 0:
-          #   move = False
+          if x == 0 and y == 0:
+            move = False
 
         if (331 in available_actions and move and not done):
           try:
