@@ -7,6 +7,7 @@ from baselines import deepq
 from pysc2.env import sc2_env
 from pysc2.lib import actions
 from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
+from baselines_legacy import cnn_to_mlp
 
 from defeat_zerglings import dqfd
 
@@ -75,9 +76,11 @@ def main():
       map_name="DefeatZerglingsAndBanelings",
       step_mul=step_mul,
       visualize=True,
-      game_steps_per_episode=steps * step_mul) as env:
+      game_steps_per_episode=steps * step_mul,
+      agent_interface_format=sc2_env.AgentInterfaceFormat(
+        feature_dimensions=sc2_env.Dimensions(screen=32, minimap=32))) as env:
 
-    model = deepq.models.cnn_to_mlp(
+    model = cnn_to_mlp(
       convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
       hiddens=[256],
       dueling=True

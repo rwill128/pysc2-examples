@@ -21,6 +21,7 @@ def worker(remote, map_name, nscripts, i):
   )
 
   with sc2_env.SC2Env(
+      players=[sc2_env.Agent(sc2_env.Race.terran)],
       agent_interface_format=[agent_format],
       map_name=map_name,
       step_mul=2) as env:

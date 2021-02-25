@@ -6,7 +6,7 @@ import tensorflow as tf
 import zipfile
 
 from absl import flags
-
+from baselines_legacy import cnn_to_mlp, BatchInput
 import baselines.common.tf_util as U
 
 from baselines import logger
@@ -209,7 +209,7 @@ act: ActWrapper
   sess.__enter__()
 
   def make_obs_ph(name):
-    return U.BatchInput((64, 64), name=name)
+    return BatchInput((1, 32, 32), name=name)
 
   act, train, update_target, debug = deepq.build_train(
     make_obs_ph=make_obs_ph,
@@ -253,7 +253,7 @@ act: ActWrapper
   obs = env.reset()
   # Select all marines first
 
-  player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
+  player_relative = obs[0].observation["feature_screen"][_PLAYER_RELATIVE]
 
   screen = player_relative
 
@@ -296,7 +296,7 @@ act: ActWrapper
       obs, screen, player = common.select_marine(env, obs)
 
       action = act(
-        np.array(screen)[None], update_eps=update_eps, **kwargs)[0]
+        np.expand_dims(np.array(screen)[None], axis=0), update_eps=update_eps, **kwargs)[0]
       reset = False
       rew = 0
 
@@ -315,14 +315,14 @@ act: ActWrapper
         #print(e)
         1  # Do nothing
 
-      player_relative = obs[0].observation["screen"][_PLAYER_RELATIVE]
+      player_relative = obs[0].observation["feature_screen"][_PLAYER_RELATIVE]
       new_screen = player_relative
 
       rew += obs[0].reward
 
       done = obs[0].step_type == environment.StepType.LAST
 
-      selected = obs[0].observation["screen"][_SELECTED]
+      selected = obs[0].observation["feature_screen"][_SELECTED]
       player_y, player_x = (selected == _PLAYER_FRIENDLY).nonzero()
 
       if (len(player_y) > 0):
@@ -351,7 +351,7 @@ act: ActWrapper
       if done:
         print("Episode Reward : %s" % episode_rewards[-1])
         obs = env.reset()
-        player_relative = obs[0].observation["screen"][
+        player_relative = obs[0].observation["feature_screen"][
           _PLAYER_RELATIVE]
 
         screen = player_relative

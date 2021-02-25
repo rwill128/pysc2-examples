@@ -4,3 +4,4 @@ numpy
 tensorflow
 absl-py
 cloudpickle
+dill

@@ -442,19 +442,19 @@ def shift(direction, number, matrix):
     in the specified (UP, DOWN, LEFT, RIGHT) direction and return it
 '''
   if direction in (UP):
-    matrix = np.roll(matrix, -number, axis=0)
+    matrix = np.roll(matrix.__array__(), -number, axis=0)
     matrix[number:, :] = -2
     return matrix
   elif direction in (DOWN):
-    matrix = np.roll(matrix, number, axis=0)
+    matrix = np.roll(matrix.__array__(), number, axis=0)
     matrix[:number, :] = -2
     return matrix
   elif direction in (LEFT):
-    matrix = np.roll(matrix, -number, axis=1)
+    matrix = np.roll(matrix.__array__(), -number, axis=1)
     matrix[:, number:] = -2
     return matrix
   elif direction in (RIGHT):
-    matrix = np.roll(matrix, number, axis=1)
+    matrix = np.roll(matrix.__array__(), number, axis=1)
     matrix[:, :number] = -2
     return matrix
   else:

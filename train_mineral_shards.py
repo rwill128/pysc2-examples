@@ -6,7 +6,7 @@ from absl import flags
 
 from pysc2.env import sc2_env
 from pysc2.lib import actions
-from baselines_legacy import cnn_to_mlp
+from baselines_legacy import cnn_to_mlp, BatchInput
 from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
 
 from common.vec_env.subproc_vec_env import SubprocVecEnv
