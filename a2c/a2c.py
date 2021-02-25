@@ -683,57 +683,11 @@ def learn(policy,
     for update in range(1, total_timesteps // nbatch + 1):
         obs, states, td_targets, masks, actions, xy0, xy1, values = runner.run()
 
-        policy_loss, value_loss, policy_entropy, \
-        policy_loss_xy0, policy_entropy_xy0, \
-        policy_loss_xy1, policy_entropy_xy1, \
-            = model.train(obs, states, td_targets,
-                          masks, actions,
-                          xy0, xy1, values)
+        policy_loss, value_loss, policy_entropy, policy_loss_xy0, policy_entropy_xy0, policy_loss_xy1, policy_entropy_xy1, = model.train(obs, states, td_targets, masks, actions, xy0, xy1, values)
 
         model.old_obs = obs
         nseconds = time.time() - tstart
         fps = int((update * nbatch) / nseconds)
-        if update % log_interval == 0 or update == 1:
-            ev = explained_variance(values, td_targets)
-            # nsml.report(
-            #     nupdates=update,
-            #     total_timesteps=update * nbatch,
-            #     fps=fps,
-            #     policy_entropy=float(policy_entropy),
-            #     policy_loss=float(policy_loss),
-
-            #     policy_loss_xy0=float(policy_loss_xy0),
-            #     policy_entropy_xy0=float(policy_entropy_xy0),
-
-            #     policy_loss_xy1=float(policy_loss_xy1),
-            #     policy_entropy_xy1=float(policy_entropy_xy1),
-
-            #     value_loss=float(value_loss),
-            #     explained_variance=float(ev),
-
-            #     batch_size=nbatch,
-            #     step=update,
-
-            #     scope=locals()
-            #     )
-            # logger.record_tabular("nupdates", update)
-            # logger.record_tabular("total_timesteps", update * nbatch)
-            # logger.record_tabular("fps", fps)
-            # logger.record_tabular("policy_entropy", float(policy_entropy))
-            # logger.record_tabular("policy_loss", float(policy_loss))
-
-            # logger.record_tabular("policy_loss_xy0", float(policy_loss_xy0))
-            # logger.record_tabular("policy_entropy_xy0",
-            #                       float(policy_entropy_xy0))
-            # logger.record_tabular("policy_loss_xy1", float(policy_loss_xy1))
-            # logger.record_tabular("policy_entropy_xy1",
-            #                       float(policy_entropy_xy1))
-            # # logger.record_tabular("policy_loss_y0", float(policy_loss_y0))
-            # # logger.record_tabular("policy_entropy_y0", float(policy_entropy_y0))
-
-            # logger.record_tabular("value_loss", float(value_loss))
-            # logger.record_tabular("explained_variance", float(ev))
-            # logger.dump_tabular()
 
         if save_interval and (update % save_interval == 0
                               or update == 1) and logger.get_dir():
