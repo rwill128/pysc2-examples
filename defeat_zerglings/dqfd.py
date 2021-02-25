@@ -115,15 +115,15 @@ def learn(env,
           q_func,
           num_actions=3,
           lr=5e-4,
-          max_timesteps=100000,
-          buffer_size=50000,
+          max_timesteps=10000,
+          buffer_size=5000,
           exploration_fraction=0.1,
           exploration_final_eps=0.02,
           train_freq=1,
           batch_size=32,
           print_freq=1,
-          checkpoint_freq=10000,
-          learning_starts=1000,
+          checkpoint_freq=1000,
+          learning_starts=100,
           gamma=1.0,
           target_network_update_freq=500,
           prioritized_replay=False,
@@ -352,8 +352,7 @@ def learn(env,
             if done:
                 print("Episode Reward : %s" % episode_rewards[-1])
                 obs = env.reset()
-                player_relative = obs[0].observation["feature_screen"][
-                    _PLAYER_RELATIVE]
+                player_relative = obs[0].observation["feature_screen"][_PLAYER_RELATIVE]
 
                 screen = player_relative
 
@@ -373,7 +372,7 @@ def learn(env,
                 else:
                     obses_t, actions, rewards, obses_tp1, dones = replay_buffer.sample(batch_size)
                     weights, batch_idxes = np.ones_like(rewards), None
-                td_errors = train(obses_t, actions, rewards, obses_tp1, dones, weights)
+                td_errors = train(np.expand_dims(obses_t, axis=1), actions, rewards, np.expand_dims(obses_tp1, axis=1), dones, weights)
                 if prioritized_replay:
                     new_priorities = np.abs(td_errors) + prioritized_replay_eps
                     replay_buffer.update_priorities(batch_idxes, new_priorities)

@@ -420,12 +420,12 @@ def check_group_list(env, obs):
         if group[0] == 48:
             army_count += group[1]
             if group[1] != 1:
-                print("group error group_id : %s count : %s" % (id, group[1]))
+                # print("group error group_id : %s count : %s" % (id, group[1]))
                 error = True
                 return error
     if army_count != env._obs[0].observation.player_common.army_count:
         error = True
-        print("army_count %s !=  %s env._obs.observation.player_common.army_count " % (army_count, env._obs[0].observation.player_common.army_count))
+        # print("army_count %s !=  %s env._obs.observation.player_common.army_count " % (army_count, env._obs[0].observation.player_common.army_count))
 
     return error
 
