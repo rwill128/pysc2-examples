@@ -5,16 +5,12 @@ import random
 
 from absl import flags
 
-from pysc2.env import sc2_env
 from pysc2.lib import actions
-from baselines_legacy import cnn_to_mlp, BatchInput
-from baselines.logger import Logger, TensorBoardOutputFormat, HumanOutputFormat
+from baselines.logger import Logger, TensorBoardOutputFormat
 
 from common.vec_env.subproc_vec_env import SubprocVecEnv
 from a2c.policies import CnnPolicy
 from a2c import a2c
-import deepq_mineral_4way
-import deepq_mineral_shards
 
 _MOVE_SCREEN = actions.FUNCTIONS.Move_screen.id
 _SELECT_ARMY = actions.FUNCTIONS.select_army.id
@@ -79,11 +75,16 @@ def main():
         env,
         seed,
         total_timesteps=num_timesteps,
+        gamma=0.99,
         nprocs=FLAGS.num_agents + FLAGS.num_scripts,
         nscripts=FLAGS.num_scripts,
-        ent_coef=0.5,
         nsteps=FLAGS.nsteps,
+        ent_coef=0.5,
+        vf_coef=0.5,
+        lr=0.25,
         max_grad_norm=0.01,
+        save_interval=1000,
+        lrschedule='linear',
         callback=a2c_callback)
 
 from baselines import logger
