@@ -95,6 +95,15 @@ def a2c_callback(locals, globals):
     logger.record_tabular("mean 100 episode reward a2c", locals['mean_100ep_reward_a2c'])
     logger.record_tabular("num_episodes", locals['num_episodes'])
     logger.record_tabular("environment_number", locals['env_num'])
+    logger.record_tabular("policy_loss", locals['model'].policy_loss)
+    logger.record_tabular("policy_loss_xy0", locals['model'].policy_loss_xy0)
+    logger.record_tabular("policy_loss_xy1", locals['model'].policy_loss_xy1)
+    logger.record_tabular("policy_entropy", locals['model'].policy_entropy)
+    logger.record_tabular("policy_entropy_xy0", locals['model'].policy_entropy_xy0)
+    logger.record_tabular("policy_entropy_xy1", locals['model'].policy_entropy_xy1)
+    logger.record_tabular("learning_rate_N", locals['model'].lr.n)
+    logger.record_tabular("learning_rate_V", locals['model'].lr.v)
+    logger.record_tabular("value_loss", locals['model'].value_loss)
     logger.record_tabular("done", locals['done'])
 
     if 'mean_100ep_reward_a2c' in locals and locals['num_episodes'] >= 10 and locals['mean_100ep_reward_a2c'] > max_mean_reward:
