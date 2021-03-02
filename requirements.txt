@@ -1,7 +1,12 @@
 git+https://github.com/deepmind/pysc2
 git+https://github.com/openai/baselines
-numpy
-tensorflow
+numpy~=1.19.5
+tensorflow~=1.14.0
 absl-py
 cloudpickle
-dill
+dill~=0.3.3
+tensorflow-gpu~=1.14.0
+joblib~=1.0.1
+six~=1.15.0
+future~=0.18.2
+s2clientprotocol~=5.0.6.83830.0

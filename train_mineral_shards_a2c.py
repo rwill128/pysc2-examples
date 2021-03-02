@@ -3,36 +3,36 @@ import os
 import datetime
 import random
 
-from absl import flags
+import absl
 
-from pysc2.lib import actions
+import pysc2.lib
 from baselines.logger import Logger, TensorBoardOutputFormat
 
-from common.vec_env.subproc_vec_env import SubprocVecEnv
+import common.vec_env.subproc_vec_env
+import a2c
 from a2c.policies import CnnPolicy
-from a2c import a2c
 
-_MOVE_SCREEN = actions.FUNCTIONS.Move_screen.id
-_SELECT_ARMY = actions.FUNCTIONS.select_army.id
+_MOVE_SCREEN = pysc2.lib.actions.FUNCTIONS.Move_screen.id
+_SELECT_ARMY = pysc2.lib.actions.FUNCTIONS.select_army.id
 _SELECT_ALL = [0]
 _NOT_QUEUED = [0]
 
 step_mul = 8
 
-FLAGS = flags.FLAGS
-flags.DEFINE_string("map", "CollectMineralShards",
+FLAGS = absl.flags.FLAGS
+absl.flags.DEFINE_string("map", "CollectMineralShards",
                     "Name of a map to use to play.")
 start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
-flags.DEFINE_string("log", "tensorboard", "logging type(stdout, tensorboard)")
-flags.DEFINE_string("algorithm", "a2c", "RL algorithm to use.")
-flags.DEFINE_integer("timesteps", 2000000, "Steps to train")
-flags.DEFINE_float("exploration_fraction", 0.5, "Exploration Fraction")
-flags.DEFINE_boolean("prioritized", True, "prioritized_replay")
-flags.DEFINE_boolean("dueling", True, "dueling")
-flags.DEFINE_float("lr", 0.0005, "Learning rate")
-flags.DEFINE_integer("num_agents", 4, "number of RL agents for A2C")
-flags.DEFINE_integer("num_scripts", 0, "number of script agents for A2C")
-flags.DEFINE_integer("nsteps", 20, "number of batch steps for A2C")
+absl.flags.DEFINE_string("log", "tensorboard", "logging type(stdout, tensorboard)")
+absl.flags.DEFINE_string("algorithm", "a2c", "RL algorithm to use.")
+absl.flags.DEFINE_integer("timesteps", 2000000, "Steps to train")
+absl.flags.DEFINE_float("exploration_fraction", 0.5, "Exploration Fraction")
+absl.flags.DEFINE_boolean("prioritized", True, "prioritized_replay")
+absl.flags.DEFINE_boolean("dueling", True, "dueling")
+absl.flags.DEFINE_float("lr", 0.0005, "Learning rate")
+absl.flags.DEFINE_integer("num_agents", 4, "number of RL agents for A2C")
+absl.flags.DEFINE_integer("num_scripts", 0, "number of script agents for A2C")
+absl.flags.DEFINE_integer("nsteps", 20, "number of batch steps for A2C")
 
 PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -57,7 +57,9 @@ def main():
     print("random lr : %s" % FLAGS.lr)
     lr_round = round(FLAGS.lr, 8)
 
-    logdir = "tensorboard/mineral/%s/%s_n%s_s%s_nsteps%s/lr%s/%s" % (FLAGS.algorithm, FLAGS.timesteps, FLAGS.num_agents + FLAGS.num_scripts, FLAGS.num_scripts, FLAGS.nsteps, lr_round, start_time)
+    logdir = "tensorboard/mineral/%s/%s_n%s_s%s_nsteps%s/lr%s/%s" % (
+    FLAGS.algorithm, FLAGS.timesteps, FLAGS.num_agents + FLAGS.num_scripts, FLAGS.num_scripts, FLAGS.nsteps, lr_round,
+    start_time)
 
     Logger.DEFAULT = Logger.CURRENT = Logger(dir=None, output_formats=[TensorBoardOutputFormat(logdir)])
 
@@ -66,11 +68,11 @@ def main():
 
     seed = 0
 
-    env = SubprocVecEnv(FLAGS.num_agents + FLAGS.num_scripts, FLAGS.num_scripts,
-                        FLAGS.map)
+    env = common.vec_env.subproc_vec_env.SubprocVecEnv(FLAGS.num_agents + FLAGS.num_scripts, FLAGS.num_scripts,
+                                                       FLAGS.map)
 
     policy_fn = CnnPolicy
-    a2c.learn(
+    a2c.a2c.learn(
         policy_fn,
         env,
         seed,
@@ -87,30 +89,33 @@ def main():
         lrschedule='linear',
         callback=a2c_callback)
 
-from baselines import logger
+
+import baselines
+
 
 def a2c_callback(locals, globals):
     global max_mean_reward, last_filename
 
-    logger.record_tabular("mean 100 episode reward a2c", locals['mean_100ep_reward_a2c'])
-    logger.record_tabular("num_episodes", locals['num_episodes'])
-    logger.record_tabular("environment_number", locals['env_num'])
-    logger.record_tabular("policy_loss", locals['model'].policy_loss)
-    logger.record_tabular("policy_loss_xy0", locals['model'].policy_loss_xy0)
-    logger.record_tabular("policy_loss_xy1", locals['model'].policy_loss_xy1)
-    logger.record_tabular("policy_entropy", locals['model'].policy_entropy)
-    logger.record_tabular("policy_entropy_xy0", locals['model'].policy_entropy_xy0)
-    logger.record_tabular("policy_entropy_xy1", locals['model'].policy_entropy_xy1)
-    logger.record_tabular("learning_rate_N", locals['model'].lr.n)
-    logger.record_tabular("learning_rate_V", locals['model'].lr.v)
-    logger.record_tabular("value_loss", locals['model'].value_loss)
-    logger.record_tabular("done", locals['done'])
+    baselines.logger.record_tabular("mean 100 episode reward a2c", locals['mean_100ep_reward_a2c'])
+    baselines.logger.record_tabular("num_episodes", locals['num_episodes'])
+    baselines.logger.record_tabular("environment_number", locals['env_num'])
+    baselines.logger.record_tabular("policy_loss", locals['model'].policy_loss)
+    baselines.logger.record_tabular("policy_loss_xy0", locals['model'].policy_loss_xy0)
+    baselines.logger.record_tabular("policy_loss_xy1", locals['model'].policy_loss_xy1)
+    baselines.logger.record_tabular("policy_entropy", locals['model'].policy_entropy)
+    baselines.logger.record_tabular("policy_entropy_xy0", locals['model'].policy_entropy_xy0)
+    baselines.logger.record_tabular("policy_entropy_xy1", locals['model'].policy_entropy_xy1)
+    baselines.logger.record_tabular("learning_rate_N", locals['model'].lr.n)
+    baselines.logger.record_tabular("learning_rate_V", locals['model'].lr.v)
+    baselines.logger.record_tabular("value_loss", locals['model'].value_loss)
+    baselines.logger.record_tabular("done", locals['done'])
 
-    if 'mean_100ep_reward_a2c' in locals and locals['num_episodes'] >= 10 and locals['mean_100ep_reward_a2c'] > max_mean_reward:
+    if 'mean_100ep_reward_a2c' in locals and locals['num_episodes'] >= 10 and locals[
+        'mean_100ep_reward_a2c'] > max_mean_reward:
         print("mean_100ep_reward_a2c : %s max_mean_reward : %s" %
               (locals['mean_100ep_reward_a2c'], max_mean_reward))
         max_mean_reward = locals['mean_100ep_reward_a2c']
-        logger.record_tabular("max_mean_reward", max_mean_reward)
+        baselines.logger.record_tabular("max_mean_reward", max_mean_reward)
 
         if not os.path.exists(os.path.join(PROJ_DIR, 'models/a2c/')):
             try:
@@ -133,7 +138,8 @@ def a2c_callback(locals, globals):
         print("save best mean_100ep_reward model to %s" % filename)
         last_filename = filename
 
-    logger.dump_tabular()
+    baselines.logger.dump_tabular()
+
 
 if __name__ == '__main__':
     main()
