@@ -4,12 +4,13 @@ import datetime
 import random
 
 import absl
+import baselines
 
 import pysc2.lib
 from baselines.logger import Logger, TensorBoardOutputFormat
 
 import common.vec_env.subproc_vec_env
-import a2c
+from a2c.a2c import learn
 from a2c.policies import CnnPolicy
 
 _MOVE_SCREEN = pysc2.lib.actions.FUNCTIONS.Move_screen.id
@@ -20,8 +21,13 @@ _NOT_QUEUED = [0]
 step_mul = 8
 
 FLAGS = absl.flags.FLAGS
+
+import sys
+
+FLAGS(sys.argv)
+
 absl.flags.DEFINE_string("map", "CollectMineralShards",
-                    "Name of a map to use to play.")
+                         "Name of a map to use to play.")
 start_time = datetime.datetime.now().strftime("%Y%m%d%H%M")
 absl.flags.DEFINE_string("log", "tensorboard", "logging type(stdout, tensorboard)")
 absl.flags.DEFINE_string("algorithm", "a2c", "RL algorithm to use.")
@@ -58,8 +64,9 @@ def main():
     lr_round = round(FLAGS.lr, 8)
 
     logdir = "tensorboard/mineral/%s/%s_n%s_s%s_nsteps%s/lr%s/%s" % (
-    FLAGS.algorithm, FLAGS.timesteps, FLAGS.num_agents + FLAGS.num_scripts, FLAGS.num_scripts, FLAGS.nsteps, lr_round,
-    start_time)
+        FLAGS.algorithm, FLAGS.timesteps, FLAGS.num_agents + FLAGS.num_scripts, FLAGS.num_scripts, FLAGS.nsteps,
+        lr_round,
+        start_time)
 
     Logger.DEFAULT = Logger.CURRENT = Logger(dir=None, output_formats=[TensorBoardOutputFormat(logdir)])
 
@@ -72,7 +79,7 @@ def main():
                                                        FLAGS.map)
 
     policy_fn = CnnPolicy
-    a2c.a2c.learn(
+    learn(
         policy_fn,
         env,
         seed,
@@ -88,9 +95,6 @@ def main():
         save_interval=1000,
         lrschedule='linear',
         callback=a2c_callback)
-
-
-import baselines
 
 
 def a2c_callback(locals, globals):
