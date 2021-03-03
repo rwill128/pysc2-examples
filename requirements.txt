@@ -38,7 +38,7 @@ six==1.15.0
 sk-video==1.1.10
 tensorboard==1.14.0
 tensorflow-estimator==1.14.0
-tensorflow-gpu==1.14.0
+tensorflow==1.14.0
 termcolor==1.1.0
 tqdm==4.58.0
 typing-extensions==3.7.4.3
